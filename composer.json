@@ -1,0 +1,17 @@
+{
+  "name": "fruit42/shop42",
+  "type": "zend-module",
+  "require": {
+    "php": ">=5.5",
+    "ext-intl" : "*",
+    "composer/installers": "~1.0",
+    "zendframework/zendframework": "^2.5",
+    "ramsey/uuid": "2.8.3",
+    "ixolit/ixopay-php-client": "1.*"
+  },
+  "autoload": {
+    "psr-0": {
+      "Shop42": "src/"
+    }
+  }
+}
