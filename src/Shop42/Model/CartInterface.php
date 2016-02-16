@@ -6,13 +6,24 @@ use Core42\Model\ModelInterface;
 interface CartInterface extends ModelInterface
 {
     /**
-     * @param mixed $userId
+     * @param mixed $id
+     * @return $this
+     */
+    public function setId($id);
+
+    /**
+     * @return mixed
+     */
+    public function getId();
+
+    /**
+     * @param int $userId
      * @return $this
      */
     public function setUserId($userId);
 
     /**
-     * @return mixed
+     * @return int
      */
     public function getUserId();
 
@@ -39,13 +50,13 @@ interface CartInterface extends ModelInterface
     public function getProductId();
 
     /**
-     * @param int $amount
+     * @param int $quantity
      * @return $this
      */
-    public function setAmount($amount);
+    public function setQuantity($quantity);
 
     /**
      * @return int
      */
-    public function getAmount();
+    public function getQuantity();
 }

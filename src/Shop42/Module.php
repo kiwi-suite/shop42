@@ -1,9 +1,15 @@
 <?php
 namespace Shop42;
 
+use Shop42\EventListener\CartEventListener;
+use Shop42\EventManager\CartEventManager;
+use Zend\EventManager\EventInterface;
+use Zend\ModuleManager\Feature\BootstrapListenerInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 
-class Module implements ConfigProviderInterface
+class Module implements
+    ConfigProviderInterface,
+    BootstrapListenerInterface
 {
 
     /**
@@ -13,6 +19,25 @@ class Module implements ConfigProviderInterface
      */
     public function getConfig()
     {
-        return [];
+        return array_merge(
+            require_once __DIR__ . '/../../config/module.config.php',
+            require_once __DIR__ . '/../../config/services.config.php'
+        );
+    }
+
+    /**
+     * Listen to the bootstrap event
+     *
+     * @param EventInterface $e
+     * @return array
+     */
+    public function onBootstrap(EventInterface $e)
+    {
+        $e->getApplication()
+            ->getServiceManager()
+            ->get(CartEventListener::class)
+            ->attach(
+                $e->getApplication()->getServiceManager()->get(CartEventManager::class)
+            );
     }
 }
