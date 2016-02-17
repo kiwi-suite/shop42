@@ -5,8 +5,8 @@ use Zend\EventManager\EventManager;
 
 class CartEventManager extends EventManager
 {
-    const EVENT_RELATIVE_NEW_PRE = 'relative.new.pre';
-    const EVENT_RELATIVE_NEW_POST = 'relative.new.post';
-    const EVENT_RELATIVE_UPDATE_PRE = 'relative.update.pre';
-    const EVENT_RELATIVE_UPDATE_POST = 'relative.update.post';
+    const EVENT_PREPARE_NEW = 'prepare_new';
+    const EVENT_FINISH_NEW = 'finish_new';
+    const EVENT_PREPARE_EXISTENT = 'prepare_existent';
+    const EVENT_FINISH_EXISTENT = 'finish_existent';
 }

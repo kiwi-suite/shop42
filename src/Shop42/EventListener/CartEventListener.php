@@ -35,8 +35,8 @@ class CartEventListener extends AbstractListenerAggregate
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach(CartEventManager::EVENT_RELATIVE_NEW_POST, array($this, 'cleanup'));
-        $this->listeners[] = $events->attach(CartEventManager::EVENT_RELATIVE_UPDATE_POST, array($this, 'cleanup'));
+        $this->listeners[] = $events->attach(CartEventManager::EVENT_FINISH_NEW, array($this, 'cleanup'));
+        $this->listeners[] = $events->attach(CartEventManager::EVENT_FINISH_EXISTENT, array($this, 'cleanup'));
     }
 
     /**

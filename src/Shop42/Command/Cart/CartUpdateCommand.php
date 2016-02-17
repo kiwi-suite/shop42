@@ -7,8 +7,11 @@ use Shop42\EventManager\CartEventManager;
 use Shop42\Model\CartInterface;
 use Shop42\Model\ProductInterface;
 
-class RelativeCartUpdateCommand extends AbstractCommand
+class CartUpdateCommand extends AbstractCommand
 {
+    const MODE_RELATIVE = 'relative';
+    const MODE_ABSOLUTE = 'absolute';
+
     /**
      * @var int
      */
@@ -35,8 +38,13 @@ class RelativeCartUpdateCommand extends AbstractCommand
     protected $product;
 
     /**
+     * @var string
+     */
+    protected $updateMode = self::MODE_RELATIVE;
+
+    /**
      * @param int $userId
-     * @return RelativeCartUpdateCommand
+     * @return CartUpdateCommand
      */
     public function setUserId($userId)
     {
@@ -47,7 +55,7 @@ class RelativeCartUpdateCommand extends AbstractCommand
 
     /**
      * @param string $sessionId
-     * @return RelativeCartUpdateCommand
+     * @return CartUpdateCommand
      */
     public function setSessionId($sessionId)
     {
@@ -58,7 +66,7 @@ class RelativeCartUpdateCommand extends AbstractCommand
 
     /**
      * @param int $productId
-     * @return RelativeCartUpdateCommand
+     * @return CartUpdateCommand
      */
     public function setProductId($productId)
     {
@@ -69,7 +77,7 @@ class RelativeCartUpdateCommand extends AbstractCommand
 
     /**
      * @param int $quantity
-     * @return RelativeCartUpdateCommand
+     * @return CartUpdateCommand
      */
     public function setQuantity($quantity)
     {
@@ -78,6 +86,20 @@ class RelativeCartUpdateCommand extends AbstractCommand
         return $this;
     }
 
+    /**
+     * @param $updateMode
+     * @return CartUpdateCommand
+     */
+    public function setUpdateMode($updateMode)
+    {
+        $this->updateMode = $updateMode;
+
+        return $this;
+    }
+
+    /**
+     * @throws \Exception
+     */
     protected function preExecute()
     {
         $this->product = $this->getTableGateway(ProductInterface::class)->selectByPrimary($this->productId);
@@ -105,7 +127,7 @@ class RelativeCartUpdateCommand extends AbstractCommand
      */
     protected function execute()
     {
-        if ($this->quantity === 0) {
+        if ($this->quantity === 0 && $this->updateMode == self::MODE_RELATIVE) {
             return;
         }
 
@@ -124,13 +146,11 @@ class RelativeCartUpdateCommand extends AbstractCommand
 
                 $result = $this->getTableGateway(CartInterface::class)->select($where);
                 if ($result->count() == 0) {
-                    $this->insertNewItem();
-
-                    return;
+                    return $this->insertNewItem();
                 }
 
                 $cart = $result->current();
-                $this->updateCurrentItem($cart);
+                return $this->updateCurrentItem($cart);
 
             });
         } catch (\Exception $e) {
@@ -156,14 +176,14 @@ class RelativeCartUpdateCommand extends AbstractCommand
         $this
             ->getServiceManager()
             ->get(CartEventManager::class)
-            ->trigger(CartEventManager::EVENT_RELATIVE_NEW_PRE, $cart);
+            ->trigger(CartEventManager::EVENT_PREPARE_NEW, $cart);
 
         $this->getTableGateway(CartInterface::class)->insert($cart);
 
         $this
             ->getServiceManager()
             ->get(CartEventManager::class)
-            ->trigger(CartEventManager::EVENT_RELATIVE_NEW_POST, $cart);
+            ->trigger(CartEventManager::EVENT_FINISH_NEW, $cart);
 
         return $cart;
     }
@@ -177,28 +197,33 @@ class RelativeCartUpdateCommand extends AbstractCommand
         $this
             ->getServiceManager()
             ->get(CartEventManager::class)
-            ->trigger(CartEventManager::EVENT_RELATIVE_UPDATE_PRE, $cart);
+            ->trigger(CartEventManager::EVENT_PREPARE_EXISTENT, $cart);
 
-        $this
-            ->getTableGateway(CartInterface::class)
-            ->getAdapter()
-            ->query(
-                sprintf(
-                    "UPDATE %s SET quantity = quantity + ? WHERE id = ?",
-                    $this->getTableGateway(CartInterface::class)->getTable()
-                ),
-                [
-                    $this->quantity,
-                    $cart->getId()
-                ]
-            );
+        if ($this->updateMode === self::MODE_ABSOLUTE) {
+            $cart->setQuantity($this->quantity);
+            $this->getTableGateway(CartInterface::class)->update($cart);
+        } else {
+            $this
+                ->getTableGateway(CartInterface::class)
+                ->getAdapter()
+                ->query(
+                    sprintf(
+                        "UPDATE %s SET quantity = quantity + ? WHERE id = ?",
+                        $this->getTableGateway(CartInterface::class)->getTable()
+                    ),
+                    [
+                        $this->quantity,
+                        $cart->getId()
+                    ]
+                );
 
-        $this->getTableGateway(CartInterface::class)->refresh($cart);
+            $this->getTableGateway(CartInterface::class)->refresh($cart);
+        }
 
         $this
             ->getServiceManager()
             ->get(CartEventManager::class)
-            ->trigger(CartEventManager::EVENT_RELATIVE_UPDATE_POST, $cart);
+            ->trigger(CartEventManager::EVENT_FINISH_EXISTENT, $cart);
 
         return $cart;
     }
