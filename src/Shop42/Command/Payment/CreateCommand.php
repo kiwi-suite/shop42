@@ -44,6 +44,9 @@ class CreateCommand extends AbstractCommand
         return $this;
     }
 
+    /**
+     *
+     */
     protected function preExecute()
     {
         if (!($this->order instanceof OrderInterface)) {
@@ -56,6 +59,9 @@ class CreateCommand extends AbstractCommand
         //$this->order->setPaymentStatus(OrderInterface::PAYMENT_STATUS_NEW);
     }
 
+    /**
+     *
+     */
     protected function execute()
     {
 
