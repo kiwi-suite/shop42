@@ -43,6 +43,11 @@ class CartUpdateCommand extends AbstractCommand
     protected $updateMode = self::MODE_RELATIVE;
 
     /**
+     * @var CartInterface
+     */
+    protected $result;
+
+    /**
      * @param int $userId
      * @return CartUpdateCommand
      */
@@ -120,6 +125,12 @@ class CartUpdateCommand extends AbstractCommand
 
             return;
         }
+
+        if ($this->quantity === 0 && $this->updateMode == self::MODE_RELATIVE) {
+            $this->addError("quantity", "nothing to do");
+
+            return;
+        }
     }
 
     /**
@@ -127,10 +138,6 @@ class CartUpdateCommand extends AbstractCommand
      */
     protected function execute()
     {
-        if ($this->quantity === 0 && $this->updateMode == self::MODE_RELATIVE) {
-            return;
-        }
-
         try {
             $this->getServiceManager()->get(TransactionManager::class)->transaction(function(){
                 $where = [
@@ -146,16 +153,21 @@ class CartUpdateCommand extends AbstractCommand
 
                 $result = $this->getTableGateway(CartInterface::class)->select($where);
                 if ($result->count() == 0) {
-                    return $this->insertNewItem();
+                    $this->result = $this->insertNewItem();
+
+                    return;
                 }
 
                 $cart = $result->current();
-                return $this->updateCurrentItem($cart);
-
+                $this->result = $this->updateCurrentItem($cart);
             });
         } catch (\Exception $e) {
             $this->addError("system", "system error");
+
+            return;
         }
+
+        return $this->result;
     }
 
     /**

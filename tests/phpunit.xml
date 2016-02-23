@@ -1,0 +1,22 @@
+<phpunit bootstrap="bootstrap.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         verbose="true"
+         stopOnFailure="false"
+         processIsolation="false"
+         backupGlobals="false"
+         syntaxCheck="true"
+        >
+    <testsuites>
+        <testsuite name="Shop42 Test Suite">
+            <directory>./Shop42Test</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <blacklist>
+            <directory suffix=".php">../../../vendor</directory>
+        </blacklist>
+    </filter>
+</phpunit>
