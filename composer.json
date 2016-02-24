@@ -20,7 +20,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Shop42": "src/Shop42/"
+      "Shop42\\": "src/Shop42/"
     }
   }
 }
