@@ -5,6 +5,17 @@ namespace Shop42\Billing;
 interface ItemInterface {
 
     /**
+     * @param mixed $productId
+     * @return $this
+     */
+    public function setProductId($productId);
+
+    /**
+     * @return mixed
+     */
+    public function getProductId();
+
+    /**
      * @param string $name
      * @return $this
      */
