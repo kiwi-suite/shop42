@@ -17,7 +17,7 @@ class BillingTaxTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(99, $itemMock->getPrice());
         $this->assertEquals(20, $itemMock->getTax());
-        $this->assertEquals(5, $itemMock->getQuantity());
+        $this->assertEquals(5, $itemMock->getTotalQuantity());
 
 
         /**

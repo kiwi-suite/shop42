@@ -37,8 +37,8 @@ class BillTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(650, $bill->getTotalPriceBeforeTax());
         $this->assertEquals(765, $bill->getTotalPriceAfterTax());
-        $this->assertEquals(8, $bill->getTotalItems());
-        $this->assertEquals(115, $bill->getTotalTax());
+        $this->assertEquals(8, $bill->getTotalQuantity());
+        $this->assertEquals(115, $bill->getTotalTaxPrice());
         $this->assertEquals([10 => 15, 20 => 100], $bill->getTotalTaxGrouped());
     }
 

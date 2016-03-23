@@ -75,8 +75,8 @@ class BillOrderSelectorTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(650, $result['bill']->getTotalPriceBeforeTax());
         $this->assertEquals(765, $result['bill']->getTotalPriceAfterTax());
-        $this->assertEquals(8, $result['bill']->getTotalItems());
-        $this->assertEquals(115, $result['bill']->getTotalTax());
+        $this->assertEquals(8, $result['bill']->getTotalQuantity());
+        $this->assertEquals(115, $result['bill']->getTotalTaxPrice());
         $this->assertEquals([10 => 15, 20 => 100], $result['bill']->getTotalTaxGrouped());
     }
 
