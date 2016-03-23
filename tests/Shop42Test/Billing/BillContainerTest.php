@@ -31,53 +31,55 @@ class BillContainerTest extends \PHPUnit_Framework_TestCase {
 
     public function testCalculations()
     {
+        $bill = new Bill();
+
         $container = new Container();
 
-        $bill = new Bill();
+        $container->addItem($this->getItemMock(100, 20, 5, false));
+        $container->addItem($this->getItemMock(50, 10, 3, false));
 
-        $bill->addItem($this->getItemMock(100, 20, 5, false));
-        $bill->addItem($this->getItemMock(50, 10, 3, false));
+        $bill->addItem($container);
 
-        $container->addItem($bill);
+        $container = new Container();
 
-        $bill = new Bill();
+        $container->addItem($this->getItemMock(300, 20, 1, false));
+        $container->addItem($this->getItemMock(80, 10, 5, false));
 
-        $bill->addItem($this->getItemMock(300, 20, 1, false));
-        $bill->addItem($this->getItemMock(80, 10, 5, false));
+        $bill->addItem($container);
 
-        $container->addItem($bill);
+        $container = new Container();
 
-        $bill = new Bill();
+        $container->addItem($this->getItemMock(10, 20, 1, false));
+        $container->addItem($this->getItemMock(20, 10, 5, false));
 
-        $bill->addItem($this->getItemMock(10, 20, 1, false));
-        $bill->addItem($this->getItemMock(20, 10, 5, false));
+        $bill->addItem($container);
 
-        $container->addItem($bill);
+        $this->assertEquals(1460, $bill->getTotalPriceBeforeTax());
+        $this->assertEquals(1687, $bill->getTotalPriceAfterTax());
+        $this->assertEquals(20, $bill->getTotalQuantity());
+        $this->assertEquals(227, $bill->getTotalTaxPrice());
 
-        $this->assertEquals(1460, $container->getTotalPriceBeforeTax());
-        $this->assertEquals(1687, $container->getTotalPriceAfterTax());
-        $this->assertEquals(20, $container->getTotalQuantity());
-        $this->assertEquals(227, $container->getTotalTaxPrice());
+        $this->assertEquals([10 => 65, 20 => 162], $bill->getTotalTaxGrouped());
 
-        foreach ($container as $key => $bill) {
+        foreach ($bill as $key => $container) {
             switch ($key) {
                 case 0:
-                    $this->assertEquals(650, $container->getSubTotalPriceBeforeTax());
-                    $this->assertEquals(765, $container->getSubTotalPriceAfterTax());
-                    $this->assertEquals(8, $container->getSubTotalQuantity());
-                    $this->assertEquals(115, $container->getSubTotalTaxPrice());
+                    $this->assertEquals(650, $bill->getSubTotalPriceBeforeTax());
+                    $this->assertEquals(765, $bill->getSubTotalPriceAfterTax());
+                    $this->assertEquals(8, $bill->getSubTotalQuantity());
+                    $this->assertEquals(115, $bill->getSubTotalTaxPrice());
                     break;
                 case 1:
-                    $this->assertEquals(1350, $container->getSubTotalPriceBeforeTax());
-                    $this->assertEquals(1565, $container->getSubTotalPriceAfterTax());
-                    $this->assertEquals(14, $container->getSubTotalQuantity());
-                    $this->assertEquals(215, $container->getSubTotalTaxPrice());
+                    $this->assertEquals(1350, $bill->getSubTotalPriceBeforeTax());
+                    $this->assertEquals(1565, $bill->getSubTotalPriceAfterTax());
+                    $this->assertEquals(14, $bill->getSubTotalQuantity());
+                    $this->assertEquals(215, $bill->getSubTotalTaxPrice());
                     break;
                 case 2:
-                    $this->assertEquals(1460, $container->getSubTotalPriceBeforeTax());
-                    $this->assertEquals(1687, $container->getSubTotalPriceAfterTax());
-                    $this->assertEquals(20, $container->getSubTotalQuantity());
-                    $this->assertEquals(227, $container->getSubTotalTaxPrice());
+                    $this->assertEquals(1460, $bill->getSubTotalPriceBeforeTax());
+                    $this->assertEquals(1687, $bill->getSubTotalPriceAfterTax());
+                    $this->assertEquals(20, $bill->getSubTotalQuantity());
+                    $this->assertEquals(227, $bill->getSubTotalTaxPrice());
                     break;
             }
         }

@@ -71,7 +71,7 @@ abstract class AbstractItem implements ItemInterface {
     /**
      * @return int
      */
-    public function getQuantity()
+    public function getTotalQuantity()
     {
         return $this->quantity;
     }

@@ -43,7 +43,7 @@ trait TaxTrait {
      */
     public function getTotalPriceBeforeTax()
     {
-        return $this->getSinglePriceBeforeTax() * $this->getQuantity();
+        return $this->getSinglePriceBeforeTax() * $this->getTotalQuantity();
     }
 
     /**
@@ -65,7 +65,7 @@ trait TaxTrait {
      */
     public function getTotalPriceAfterTax()
     {
-        return $this->getSinglePriceAfterTax() * $this->getQuantity();
+        return $this->getSinglePriceAfterTax() * $this->getTotalQuantity();
     }
 
     /**
@@ -87,7 +87,7 @@ trait TaxTrait {
      */
     public function getTotalTaxPrice()
     {
-        return $this->getSingleTaxPrice() * $this->getQuantity();
+        return $this->getSingleTaxPrice() * $this->getTotalQuantity();
     }
 
 }

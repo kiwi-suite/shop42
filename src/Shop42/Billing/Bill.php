@@ -2,77 +2,7 @@
 
 namespace Shop42\Billing;
 
-class Bill {
-
-    protected $items = [];
-
-    /**
-     * @param ItemInterface $item
-     * @return $this
-     */
-    public function addItem(ItemInterface $item)
-    {
-        $this->items[] = $item;
-        return $this;
-    }
-
-    /**
-     * @param array $items
-     * @return $this
-     */
-    public function setItems(array $items = [])
-    {
-        $this->items = $items;
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getItems()
-    {
-        return $this->items;
-    }
-
-    /**
-     * @return float
-     */
-    public function getTotalPriceBeforeTax()
-    {
-        return array_sum(array_map(function(ItemInterface $item){
-            return $item->getTotalPriceBeforeTax();
-        }, $this->items));
-    }
-
-    /**
-     * @return float
-     */
-    public function getTotalPriceAfterTax()
-    {
-        return array_sum(array_map(function(ItemInterface $item){
-            return $item->getTotalPriceAfterTax();
-        }, $this->items));
-    }
-
-    /**
-     * @return int
-     */
-    public function getTotalItems()
-    {
-        return array_sum(array_map(function(ItemInterface $item){
-            return $item->getQuantity();
-        }, $this->items));
-    }
-
-    /**
-     * @return float
-     */
-    public function getTotalTax()
-    {
-        return array_sum(array_map(function(ItemInterface $item){
-            return $item->getTotalTaxPrice();
-        }, $this->items));
-    }
+class Bill extends Container{
 
     /**
      * @return array
@@ -81,12 +11,24 @@ class Bill {
     {
         $taxes = [];
 
-        /** @var ItemInterface $item */
-        foreach ($this->items as $item) {
+        $appendTaxes = function(ItemInterface $item) use (&$taxes){
             if ( ! array_key_exists($item->getTax(), $taxes)) {
                 $taxes[$item->getTax()] = $item->getTotalTaxPrice();
             } else {
                 $taxes[$item->getTax()] += $item->getTotalTaxPrice();
+            }
+        };
+
+        foreach ($this->items as $item) {
+
+            if ($item instanceof ItemInterface) {
+                /** @var ItemInterface $item */
+                $appendTaxes($item);
+            } elseif ($item instanceof Container) {
+                /** @var Container $item */
+                foreach ($item->getItems() as $subItem) {
+                    $appendTaxes($subItem);
+                }
             }
         }
 

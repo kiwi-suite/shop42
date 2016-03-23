@@ -2,7 +2,7 @@
 
 namespace Shop42\Billing;
 
-interface ItemInterface {
+interface ItemInterface extends BillableInterface {
 
     /**
      * @param mixed $productId
@@ -66,19 +66,9 @@ interface ItemInterface {
     public function setQuantity($quantity);
 
     /**
-     * @return int
-     */
-    public function getQuantity();
-
-    /**
      * @return float
      */
     public function getSinglePriceBeforeTax();
-
-    /**
-     * @return float
-     */
-    public function getTotalPriceBeforeTax();
 
     /**
      * @return float
@@ -88,16 +78,6 @@ interface ItemInterface {
     /**
      * @return float
      */
-    public function getTotalPriceAfterTax();
-
-    /**
-     * @return float
-     */
     public function getSingleTaxPrice();
-
-    /**
-     * @return float
-     */
-    public function getTotalTaxPrice();
 
 }

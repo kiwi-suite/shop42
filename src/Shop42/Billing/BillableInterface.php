@@ -2,7 +2,7 @@
 
 namespace Shop42\Billing;
 
-interface TotalCalculableInterface {
+interface BillableInterface {
 
     /**
      * @return int
