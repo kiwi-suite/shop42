@@ -2,7 +2,9 @@
 namespace Shop42;
 
 use Shop42\EventListener\CartEventListener;
+use Shop42\EventListener\CheckoutEventListener;
 use Shop42\EventManager\CartEventManager;
+use Shop42\EventManager\CheckoutEventManager;
 use Zend\EventManager\EventInterface;
 use Zend\ModuleManager\Feature\BootstrapListenerInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
@@ -39,5 +41,13 @@ class Module implements
             ->attach(
                 $e->getApplication()->getServiceManager()->get(CartEventManager::class)
             );
+
+        $e->getApplication()
+            ->getServiceManager()
+            ->get(CheckoutEventListener::class)
+            ->attach(
+                $e->getApplication()->getServiceManager()->get(CheckoutEventManager::class)
+            );
+        
     }
 }
