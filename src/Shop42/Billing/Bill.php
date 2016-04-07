@@ -2,9 +2,17 @@
 
 namespace Shop42\Billing;
 
-class Bill implements BillableInterface, \Iterator, \Countable {
-
+class Bill implements BillableInterface, \Iterator, \Countable, \JsonSerializable
+{
+    /**
+     * @var array
+     */
     protected $items = [];
+
+    /**
+     * @var string
+     */
+    protected $currency;
 
     /**
      * @param BillableInterface $item
@@ -115,6 +123,45 @@ class Bill implements BillableInterface, \Iterator, \Countable {
     }
 
     /**
+     * @return string
+     * @throws \Exception
+     */
+    public function getCurrency()
+    {
+        if (!empty($this->currency)) {
+            return $this->currency;
+        }
+
+        $currency = [];
+
+        $this->deepItemWalk($this->getItems(), function(ItemInterface $item) use (&$currency) {
+            $currency[$item->getCurrency()] = true;
+        });
+
+        if (count($currency) == 0) {
+            return null;
+        }
+
+        if (count($currency) > 1) {
+            throw new \Exception("currency mismatch");
+        }
+
+        $this->currency = array_keys($currency)[0];
+        return $this->currency;
+    }
+
+    /**
+     * @param string $currency
+     * @return $this
+     */
+    public function setCurrency($currency)
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    /**
      * @param array $items
      * @param \Closure $callback
      */
@@ -193,34 +240,84 @@ class Bill implements BillableInterface, \Iterator, \Countable {
         }, $items));
     }
 
+    /**
+     *
+     */
     public function rewind()
     {
         reset($this->items);
     }
 
+    /**
+     * @return ItemInterface
+     */
     public function current()
     {
         return current($this->items);
     }
 
+    /**
+     * @return int
+     */
     public function key()
     {
         return key($this->items);
     }
 
+    /**
+     * @return ItemInterface
+     */
     public function next()
     {
         return next($this->items);
     }
 
+    /**
+     * @return bool
+     */
     public function valid()
     {
         return key($this->items) !== null;
     }
 
+    /**
+     * @return int
+     */
     public function count()
     {
         return count($this->items);
     }
 
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        $items = [];
+        foreach ($this->getItems() as $item) {
+            $items[] = $item->toArray();
+        }
+
+        return [
+            'totalPriceAfterTax' => $this->getTotalPriceAfterTax(),
+            'totalPriceBeforeTax' => $this->getTotalPriceBeforeTax(),
+            'totalTaxGrouped' => $this->getTotalTaxGrouped(),
+            'totalQuantity' => $this->getTotalQuantity(),
+            'totalTaxPrice' => $this->getTotalTaxPrice(),
+            'currency' => $this->getCurrency(),
+            'items' => $items,
+        ];
+    }
+
+    /**
+     * Specify data which should be serialized to JSON
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4.0
+     */
+    function jsonSerialize()
+    {
+        return $this->toArray();
+    }
 }

@@ -16,6 +16,17 @@ interface ItemInterface extends BillableInterface {
     public function getProductId();
 
     /**
+     * @param string $uuid
+     * @return $this
+     */
+    public function setUuid($uuid);
+
+    /**
+     * @return string
+     */
+    public function getUuid();
+
+    /**
      * @param string $name
      * @return $this
      */
@@ -80,4 +91,9 @@ interface ItemInterface extends BillableInterface {
      */
     public function getSingleTaxPrice();
 
+    /**
+     * @param string $currency
+     * @return $this
+     */
+    public function setCurrency($currency);
 }

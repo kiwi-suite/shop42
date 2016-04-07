@@ -2,6 +2,7 @@
 namespace Shop42\Model;
 
 use Core42\Model\ModelInterface;
+use Shop42\Billing\Bill;
 
 interface OrderInterface extends ModelInterface
 {
@@ -9,6 +10,13 @@ interface OrderInterface extends ModelInterface
     const PAYMENT_STATUS_PENDING = 'pending';
     const PAYMENT_STATUS_ERROR = 'error';
     const PAYMENT_STATUS_SUCCESS = 'success';
+
+    const STATUS_OPEN = 'open';
+    const STATUS_CANCEL = 'cancel';
+    const STATUS_ERROR = 'error';
+    const STATUS_FINISH = 'finish';
+    const STATUS_INCOMPLETE = 'incomplete';
+    const STATUS_MARK = 'mark';
 
     const GENDER_MALE = "m";
     const GENDER_FEMALE = "f";
@@ -34,6 +42,17 @@ interface OrderInterface extends ModelInterface
      * @return $this
      */
     public function setUuid($uuid);
+
+    /**
+     * @param string $status
+     * @return $this
+     */
+    public function setStatus($status);
+
+    /**
+     * @return string
+     */
+    public function getStatus();
 
     /**
      * @param string $paymentStatus
@@ -319,4 +338,114 @@ interface OrderInterface extends ModelInterface
      * @return string
      */
     public function getShippingPhone();
+
+    /**
+     * @param string $orderNumber
+     * @return $this
+     */
+    public function setOrderNumber($orderNumber);
+
+    /**
+     * @return string
+     */
+    public function getOrderNumber();
+
+    /**
+     * @param string $invoiceNumber
+     * @return $this
+     */
+    public function setInvoiceNumber($invoiceNumber);
+
+    /**
+     * @return string
+     */
+    public function getInvoiceNumber();
+
+    /**
+     * @param string $deliveryNumber
+     * @return $this
+     */
+    public function setDeliveryNumber($deliveryNumber);
+
+    /**
+     * @return string
+     */
+    public function getDeliveryNumber();
+
+    /**
+     * @param int $totalQuantity
+     * @return $this
+     */
+    public function setTotalQuantity($totalQuantity);
+
+    /**
+     * @return int
+     */
+    public function getTotalQuantity();
+
+    /**
+     * @param float $totalPriceBeforeTax
+     * @return $this
+     */
+    public function setTotalPriceBeforeTax($totalPriceBeforeTax);
+
+    /**
+     * @return float
+     */
+    public function getTotalPriceBeforeTax();
+
+    /**
+     * @param float $totalPriceAfterTax
+     * @return $this
+     */
+    public function setTotalPriceAfterTax($totalPriceAfterTax);
+
+    /**
+     * @return float
+     */
+    public function getTotalPriceAfterTax();
+
+    /**
+     * @param Bill $bill
+     * @return $this
+     */
+    public function setBill(Bill $bill);
+
+    /**
+     * @return Bill
+     */
+    public function getBill();
+
+    /**
+     * @param \DateTime $payed
+     * @return $this
+     */
+    public function setPayed(\DateTime $payed);
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getPayed();
+
+    /**
+     * @param \DateTime $delivered
+     * @return $this
+     */
+    public function setDelivered(\DateTime $delivered);
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getDelivered();
+
+    /**
+     * @param \DateTime $created
+     * @return $this
+     */
+    public function setCreated(\DateTime $created);
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreated();
 }

@@ -51,4 +51,15 @@ interface ProductInterface extends ModelInterface
      * @return int
      */
     public function getStock();
+
+    /**
+     * @param int $maxQuantity
+     * @return $this
+     */
+    public function setMaxQuantity($maxQuantity);
+
+    /**
+     * @return int
+     */
+    public function getMaxQuantity();
 }

@@ -2,13 +2,11 @@
 namespace Shop42\Command\Payment;
 
 use Core42\Command\AbstractCommand;
-use Ixopay\Client\Data\Customer;
-use Ixopay\Client\Data\Item;
-use Ixopay\Client\Transaction\Debit;
+use Core42\Db\Transaction\TransactionManager;
 use Rhumsaa\Uuid\Uuid;
+use Shop42\Billing\Bill;
 use Shop42\Model\OrderInterface;
 use Shop42\Model\OrderItemInterface;
-use Zend\Stdlib\Hydrator\ClassMethods;
 
 class CreateCommand extends AbstractCommand
 {
@@ -18,9 +16,9 @@ class CreateCommand extends AbstractCommand
     protected $order;
 
     /**
-     * @var OrderItemInterface[]
+     * @var Bill
      */
-    protected $orderItems = [];
+    protected $bill;
 
     /**
      * @param OrderInterface $order
@@ -34,15 +32,16 @@ class CreateCommand extends AbstractCommand
     }
 
     /**
-     * @param array $orderItems
+     * @param Bill $bill
      * @return $this
      */
-    public function setOrderItems(array $orderItems)
+    public function setBill(Bill $bill)
     {
-        $this->orderItems = $orderItems;
+        $this->bill = $bill;
 
         return $this;
     }
+
 
     /**
      *
@@ -55,8 +54,16 @@ class CreateCommand extends AbstractCommand
             return ;
         }
 
-        $this->order->setUuid(Uuid::uuid4());
-        //$this->order->setPaymentStatus(OrderInterface::PAYMENT_STATUS_NEW);
+        if (empty($this->order->getUuid())) {
+            $this->order->setUuid(Uuid::uuid4());
+        }
+
+        $this->order->setPaymentStatus(OrderInterface::PAYMENT_STATUS_NEW);
+        $this->order->setStatus(OrderInterface::STATUS_INCOMPLETE);
+        $this->order->setTotalQuantity($this->bill->getTotalQuantity());
+        $this->order->setTotalPriceAfterTax($this->bill->getTotalPriceAfterTax());
+        $this->order->setTotalPriceBeforeTax($this->bill->getTotalPriceBeforeTax());
+        $this->order->setBill($this->bill);
     }
 
     /**
@@ -64,60 +71,14 @@ class CreateCommand extends AbstractCommand
      */
     protected function execute()
     {
-
-        $this->getTableGateway('Shop42\Order')->insert($this->order);
-
-        $transaction = new Debit();
-
-
-    }
-
-    /**
-     * @return Customer
-     */
-    protected function getCustomer()
-    {
-        $data = array_filter($this->order->toArray(), function($value, $key){
-            if (substr($key, 0, 1) != "billing" && substr($key, 0, 1) != "shipping") {
-                return false;
-            }
-
-            if (empty($value)) {
-                return false;
-            }
-
-            return true;
-        }, ARRAY_FILTER_USE_BOTH);
-
-        $hydrator = new ClassMethods(false);
-        /** @var Customer $customer */
-        $customer = $hydrator->hydrate($data, new Customer());
-        $customer->setIpAddress(
-            empty($_SERVER['X-Forwarded-For']) ? $_SERVER['REMOTE_ADDR'] : $_SERVER['X-Forwarded-For']
-        );
-
-        return $customer;
-    }
-
-    /**
-     * @return array
-     */
-    protected function getItems()
-    {
-        $items = [];
-
-        foreach ($this->orderItems as $_orderItem) {
-            $item = new Item();
-            $item->setName($_orderItem->getName())
-                ->setIdentification($_orderItem->getProductId())
-                ->setPrice($_orderItem->getPrice())
-                ->setCurrency($_orderItem->getCurrency())
-                ->setQuantity($_orderItem->getQuantity())
-                ->setExtraData("vat", $_orderItem->getTax());
-
-            $items[] = $item;
+        try {
+            $this->getServiceManager()->get(TransactionManager::class)->transaction(function(){
+                $this->order->setCreated(new \DateTime());
+                $this->getTableGateway(OrderInterface::class)->insert($this->order);
+            });
+        } catch (\Exception $e) {
+            var_dump($e->getMessage());
+            die();
         }
-
-        return $items;
     }
 }

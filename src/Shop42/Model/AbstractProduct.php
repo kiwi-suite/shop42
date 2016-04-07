@@ -14,6 +14,7 @@ abstract class AbstractProduct extends AbstractModel implements ProductInterface
         'uuid',
         'status',
         'stock',
+        'maxQuantity',
     ];
 
     /**
@@ -90,5 +91,24 @@ abstract class AbstractProduct extends AbstractModel implements ProductInterface
     public function getStock()
     {
         return $this->get("stock");
+    }
+
+    /**
+     * @param int $maxQuantity
+     * @return $this
+     * @throws \Exception
+     */
+    public function setMaxQuantity($maxQuantity)
+    {
+        return $this->set("maxQuantity", $maxQuantity);
+    }
+
+    /**
+     * @return int
+     * @throws \Exception
+     */
+    public function getMaxQuantity()
+    {
+        return $this->get("maxQuantity");
     }
 }

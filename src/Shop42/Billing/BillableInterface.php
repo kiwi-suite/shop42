@@ -24,4 +24,14 @@ interface BillableInterface {
      */
     public function getTotalTaxPrice();
 
+    /**
+     * @return array
+     */
+    public function toArray();
+
+    /**
+     * @return string
+     */
+    public function getCurrency();
+
 }

@@ -120,6 +120,12 @@ class CartUpdateCommand extends AbstractCommand
             return;
         }
 
+        if ($this->product->getMaxQuantity() !== null && $this->quantity > $this->product->getMaxQuantity()) {
+            $this->addError("maxQuantity", "maxQuantity reached");
+
+            return;
+        }
+
         if (empty($this->sessionId)) {
             $this->addError("sessionId", "invalid sessionId");
 
@@ -158,7 +164,15 @@ class CartUpdateCommand extends AbstractCommand
                     return;
                 }
 
+                /** @var CartInterface $cart */
                 $cart = $result->current();
+                if ($this->product->getMaxQuantity() !== null
+                    && $cart->getQuantity() + $this->quantity > $this->product->getMaxQuantity()
+                ) {
+                    $this->addError("maxQuantity", "maxQuantity reached");
+
+                    return;
+                }
                 $this->result = $this->updateCurrentItem($cart);
             });
         } catch (\Exception $e) {
