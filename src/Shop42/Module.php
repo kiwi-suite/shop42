@@ -23,7 +23,8 @@ class Module implements
     {
         return array_merge(
             require_once __DIR__ . '/../../config/module.config.php',
-            require_once __DIR__ . '/../../config/services.config.php'
+            require_once __DIR__ . '/../../config/services.config.php',
+            require_once __DIR__ . '/../../config/payment.config.php'
         );
     }
 

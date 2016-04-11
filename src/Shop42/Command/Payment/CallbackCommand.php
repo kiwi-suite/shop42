@@ -4,7 +4,9 @@ namespace Shop42\Command\Payment;
 use Core42\Command\AbstractCommand;
 use Core42\Db\Transaction\TransactionManager;
 use Ixopay\Client\Callback\Result;
+use Ixopay\Client\Client;
 use Shop42\EventManager\CheckoutEventManager;
+use Shop42\Ixopay\Ixopay;
 use Shop42\Model\OrderInterface;
 
 class CallbackCommand extends AbstractCommand
@@ -25,10 +27,20 @@ class CallbackCommand extends AbstractCommand
     protected $order;
 
     /**
+     * @var string
+     */
+    protected $countryCode;
+
+    /**
+     * @var Result
+     */
+    protected $result;
+
+    /**
      * @param $paymentProvider
      * @return $this
      */
-    public function setPaymentMethod($paymentProvider)
+    public function setPaymentProvider($paymentProvider)
     {
         $this->paymentProvider = $paymentProvider;
 
@@ -47,11 +59,46 @@ class CallbackCommand extends AbstractCommand
     }
 
     /**
+     * @param string $countryCode
+     * @return $this
+     */
+    public function setCountryCode($countryCode)
+    {
+        $this->countryCode = $countryCode;
+
+        return $this;
+    }
+
+    /**
      *
      */
     protected function preExecute()
     {
-        //TODO ixopay client
+        /** @var Client $client */
+        $client = $this->getServiceManager()->get(Ixopay::class)->getClient(
+            $this->paymentProvider,
+            $this->countryCode,
+            \Locale::getPrimaryLanguage($this->locale)
+        );
+
+        if (!$client->validateCallbackWithGlobals()) {
+            $this->addError("invalid", "callback signature invalid");
+
+            return;
+        }
+
+        $this->result = $client->readCallback(file_get_contents('php://input'));
+
+        $orderResult = $this->getTableGateway(OrderInterface::class)->select([
+            'uuid' => $this->result->getTransactionId(),
+        ]);
+
+        if ($orderResult->count() == 0) {
+            $this->addError("uuid", "invalid uuid");
+            return;
+        }
+
+        $this->order = $orderResult->current();
     }
 
     /**
@@ -68,7 +115,7 @@ class CallbackCommand extends AbstractCommand
                     ->trigger(CheckoutEventManager::EVENT_CALLBACK_PRE, $this->order);
 
 
-                switch (true/*change to ixopaylib*/) {
+                switch ($this->result->getResult()) {
                     case Result::RESULT_OK:
                         $this->handleSuccess();
                         break;
@@ -83,6 +130,9 @@ class CallbackCommand extends AbstractCommand
                         break;
                 }
 
+                if ($this->order->hasChanged()) {
+                    $this->getTableGateway(OrderInterface::class)->update($this->order);
+                }
 
                 $this
                     ->getServiceManager()
@@ -103,6 +153,13 @@ class CallbackCommand extends AbstractCommand
 
     protected function handleError()
     {
+        if ($this->order->getPaymentStatus() === OrderInterface::STATUS_ERROR) {
+            return;
+        }
+
+        $this->order->setPaymentStatus(OrderInterface::PAYMENT_STATUS_ERROR)
+            ->setStatus(OrderInterface::STATUS_ERROR);
+
         $this
             ->getServiceManager()
             ->get(CheckoutEventManager::class)
@@ -111,6 +168,14 @@ class CallbackCommand extends AbstractCommand
 
     protected function handleSuccess()
     {
+        if ($this->order->getPaymentStatus() === OrderInterface::PAYMENT_STATUS_SUCCESS) {
+            return;
+        }
+
+        $this->order->setPayed(new \DateTime())
+            ->setPaymentStatus(OrderInterface::PAYMENT_STATUS_SUCCESS)
+            ->setStatus(OrderInterface::STATUS_OPEN);
+
         $this
             ->getServiceManager()
             ->get(CheckoutEventManager::class)
@@ -119,6 +184,12 @@ class CallbackCommand extends AbstractCommand
 
     protected function handlePending()
     {
+        if ($this->order->getPaymentStatus() === OrderInterface::PAYMENT_STATUS_PENDING) {
+            return;
+        }
+
+        $this->order->setPaymentStatus(OrderInterface::PAYMENT_STATUS_PENDING);
+
         $this
             ->getServiceManager()
             ->get(CheckoutEventManager::class)

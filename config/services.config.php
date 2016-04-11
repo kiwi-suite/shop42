@@ -7,6 +7,8 @@ use Shop42\EventListener\Service\CartEventListenerFactory;
 use Shop42\EventListener\Service\CheckoutEventListenerFactory;
 use Shop42\EventManager\CartEventManager;
 use Shop42\EventManager\CheckoutEventManager;
+use Shop42\Ixopay\Ixopay;
+use Shop42\Ixopay\Service\IxopayFactory;
 use Shop42\Model\CartInterface;
 use Shop42\Model\OrderInterface;
 use Shop42\Model\ProductI18nInterface;
@@ -22,6 +24,8 @@ return [
 
             CheckoutEventManager::class => InvokableFactory::class,
             CheckoutEventListener::class => CheckoutEventListenerFactory::class,
+
+            Ixopay::class => IxopayFactory::class,
         ],
     ],
     'table_gateway' => [
