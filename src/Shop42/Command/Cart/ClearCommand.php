@@ -3,7 +3,7 @@ namespace Shop42\Command\Cart;
 
 use Core42\Command\AbstractCommand;
 use Core42\Db\Transaction\TransactionManager;
-use Shop42\Model\CartInterface;
+use Shop42\TableGateway\CartTableGatewayInterface;
 
 class ClearCommand extends AbstractCommand
 {
@@ -66,12 +66,12 @@ class ClearCommand extends AbstractCommand
     protected function clearByUserId($userId)
     {
         $this
-            ->getTableGateway(CartInterface::class)
+            ->getTableGateway(CartTableGatewayInterface::class)
             ->getAdapter()
             ->query(
                 sprintf(
                     "DELETE FROM %s WHERE userId = ?",
-                    $this->getTableGateway(CartInterface::class)->getTable()
+                    $this->getTableGateway(CartTableGatewayInterface::class)->getTable()
                 ),
                 [$userId]
             );
@@ -83,12 +83,12 @@ class ClearCommand extends AbstractCommand
     protected function clearBySessionId($sessionId)
     {
         $this
-            ->getTableGateway(CartInterface::class)
+            ->getTableGateway(CartTableGatewayInterface::class)
             ->getAdapter()
             ->query(
                 sprintf(
                     "DELETE FROM %s WHERE sessionId = ?",
-                    $this->getTableGateway(CartInterface::class)->getTable()
+                    $this->getTableGateway(CartTableGatewayInterface::class)->getTable()
                 ),
                 [$sessionId]
             );

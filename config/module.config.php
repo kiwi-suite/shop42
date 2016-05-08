@@ -1,19 +1,17 @@
 <?php
 namespace Shop42;
-use Shop42\Model\CartInterface;
-use Shop42\Model\OrderInterface;
-use Shop42\Model\OrderItemInterface;
-use Shop42\Model\ProductI18nInterface;
-use Shop42\Model\ProductInterface;
+use Shop42\TableGateway\CartTableGatewayInterface;
+use Shop42\TableGateway\OrderTableGatewayInterface;
+use Shop42\TableGateway\ProductI18nTableGatewayInterface;
+use Shop42\TableGateway\ProductTableGatewayInterface;
 
 return [
     'shop42' => [
         'table_gateway' => [
-            CartInterface::class => '',
-            OrderInterface::class => '',
-            OrderItemInterface::class => '',
-            ProductI18nInterface::class => '',
-            ProductInterface::class => '',
+            CartTableGatewayInterface::class => '',
+            OrderTableGatewayInterface::class => '',
+            ProductI18nTableGatewayInterface::class => '',
+            ProductTableGatewayInterface::class => '',
         ],
     ],
 ];

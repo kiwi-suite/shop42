@@ -14,6 +14,7 @@ use Shop42\Command\Stock\ChangeCommand;
 use Shop42\EventManager\CheckoutEventManager;
 use Shop42\Ixopay\Ixopay;
 use Shop42\Model\OrderInterface;
+use Shop42\TableGateway\OrderTableGatewayInterface;
 
 class CheckoutCommand extends AbstractCommand
 {
@@ -180,7 +181,7 @@ class CheckoutCommand extends AbstractCommand
                 }
 
                 $this->order->setCreated(new \DateTime());
-                $this->getTableGateway(OrderInterface::class)->insert($this->order);
+                $this->getTableGateway(OrderTableGatewayInterface::class)->insert($this->order);
             });
         } catch (\Exception $e) {
             $this->addError("system", "system error");

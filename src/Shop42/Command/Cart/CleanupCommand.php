@@ -3,7 +3,7 @@ namespace Shop42\Command\Cart;
 
 use Core42\Command\AbstractCommand;
 use Core42\Db\Transaction\TransactionManager;
-use Shop42\Model\CartInterface;
+use Shop42\TableGateway\CartTableGatewayInterface;
 
 class CleanupCommand extends AbstractCommand
 {
@@ -70,12 +70,12 @@ class CleanupCommand extends AbstractCommand
     protected function cleanupByUserId($userId)
     {
         $this
-            ->getTableGateway(CartInterface::class)
+            ->getTableGateway(CartTableGatewayInterface::class)
             ->getAdapter()
             ->query(
                 sprintf(
                     "DELETE FROM %s WHERE userId = ? AND quantity = ?",
-                    $this->getTableGateway(CartInterface::class)->getTable()
+                    $this->getTableGateway(CartTableGatewayInterface::class)->getTable()
                 ),
                 [$userId, 0]
             );
@@ -87,12 +87,12 @@ class CleanupCommand extends AbstractCommand
     protected function cleanupBySessionId($sessionId)
     {
         $this
-            ->getTableGateway(CartInterface::class)
+            ->getTableGateway(CartTableGatewayInterface::class)
             ->getAdapter()
             ->query(
                 sprintf(
                     "DELETE FROM %s WHERE sessionId = ? AND quantity = ?",
-                    $this->getTableGateway(CartInterface::class)->getTable()
+                    $this->getTableGateway(CartTableGatewayInterface::class)->getTable()
                 ),
                 [$sessionId, 0]
             );
@@ -104,12 +104,12 @@ class CleanupCommand extends AbstractCommand
     protected function cleanupAll()
     {
         $this
-            ->getTableGateway(CartInterface::class)
+            ->getTableGateway(CartTableGatewayInterface::class)
             ->getAdapter()
             ->query(
                 sprintf(
                     "DELETE FROM %s WHERE quantity = ?",
-                    $this->getTableGateway(CartInterface::class)->getTable()
+                    $this->getTableGateway(CartTableGatewayInterface::class)->getTable()
                 ),
                 [0]
             );

@@ -2,10 +2,12 @@
 namespace Shop42\Selector\Cart;
 
 use Core42\Selector\AbstractDatabaseSelector;
-use Shop42\Billing\Bill;
 use Shop42\Model\CartInterface;
 use Shop42\Model\ProductI18nInterface;
 use Shop42\Model\ProductInterface;
+use Shop42\TableGateway\CartTableGatewayInterface;
+use Shop42\TableGateway\ProductI18nTableGatewayInterface;
+use Shop42\TableGateway\ProductTableGatewayInterface;
 
 class ProductListSelector extends AbstractDatabaseSelector
 {
@@ -71,7 +73,7 @@ class ProductListSelector extends AbstractDatabaseSelector
             ];
         }
 
-        $result = $this->getTableGateway(CartInterface::class)->select($where);
+        $result = $this->getTableGateway(CartTableGatewayInterface::class)->select($where);
         if ($result->count() == 0) {
             return [];
         }
@@ -88,8 +90,8 @@ class ProductListSelector extends AbstractDatabaseSelector
             ];
         }
 
-        $productResult = $this->getTableGateway(ProductInterface::class)->select(['id' => $productIds]);
-        $productI18nResult = $this->getTableGateway(ProductI18nInterface::class)->select([
+        $productResult = $this->getTableGateway(ProductTableGatewayInterface::class)->select(['id' => $productIds]);
+        $productI18nResult = $this->getTableGateway(ProductI18nTableGatewayInterface::class)->select([
             'locale' => $this->locale,
             'productId' => $productIds
         ]);

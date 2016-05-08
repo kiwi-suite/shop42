@@ -6,6 +6,8 @@ use Core42\Db\Transaction\TransactionManager;
 use Shop42\EventManager\CartEventManager;
 use Shop42\Model\CartInterface;
 use Shop42\Model\ProductInterface;
+use Shop42\TableGateway\CartTableGatewayInterface;
+use Shop42\TableGateway\ProductTableGatewayInterface;
 
 class CartUpdateCommand extends AbstractCommand
 {
@@ -107,7 +109,7 @@ class CartUpdateCommand extends AbstractCommand
      */
     protected function preExecute()
     {
-        $this->product = $this->getTableGateway(ProductInterface::class)->selectByPrimary($this->productId);
+        $this->product = $this->getTableGateway(ProductTableGatewayInterface::class)->selectByPrimary($this->productId);
         if (empty($this->product)) {
             $this->addError("productId", "invalid productId");
 
@@ -157,7 +159,7 @@ class CartUpdateCommand extends AbstractCommand
                     ];
                 }
 
-                $result = $this->getTableGateway(CartInterface::class)->select($where);
+                $result = $this->getTableGateway(CartTableGatewayInterface::class)->select($where);
                 if ($result->count() == 0) {
                     $this->result = $this->insertNewItem();
 
@@ -190,7 +192,7 @@ class CartUpdateCommand extends AbstractCommand
     protected function insertNewItem()
     {
         /** @var CartInterface $cart */
-        $cart = $this->getTableGateway(CartInterface::class)->getModel();
+        $cart = $this->getTableGateway(CartTableGatewayInterface::class)->getModel();
         $cart->setProductId($this->product->getId())
             ->setSessionId($this->sessionId)
             ->setQuantity($this->quantity);
@@ -204,7 +206,7 @@ class CartUpdateCommand extends AbstractCommand
             ->get(CartEventManager::class)
             ->trigger(CartEventManager::EVENT_PREPARE_NEW, $cart);
 
-        $this->getTableGateway(CartInterface::class)->insert($cart);
+        $this->getTableGateway(CartTableGatewayInterface::class)->insert($cart);
 
         $this
             ->getServiceManager()
@@ -227,15 +229,15 @@ class CartUpdateCommand extends AbstractCommand
 
         if ($this->updateMode === self::MODE_ABSOLUTE) {
             $cart->setQuantity($this->quantity);
-            $this->getTableGateway(CartInterface::class)->update($cart);
+            $this->getTableGateway(CartTableGatewayInterface::class)->update($cart);
         } else {
             $this
-                ->getTableGateway(CartInterface::class)
+                ->getTableGateway(CartTableGatewayInterface::class)
                 ->getAdapter()
                 ->query(
                     sprintf(
                         "UPDATE %s SET quantity = quantity + ? WHERE id = ?",
-                        $this->getTableGateway(CartInterface::class)->getTable()
+                        $this->getTableGateway(CartTableGatewayInterface::class)->getTable()
                     ),
                     [
                         $this->quantity,
@@ -243,7 +245,7 @@ class CartUpdateCommand extends AbstractCommand
                     ]
                 );
 
-            $this->getTableGateway(CartInterface::class)->refresh($cart);
+            $this->getTableGateway(CartTableGatewayInterface::class)->refresh($cart);
         }
 
         $this

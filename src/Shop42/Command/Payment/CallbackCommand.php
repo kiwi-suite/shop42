@@ -8,6 +8,7 @@ use Ixopay\Client\Client;
 use Shop42\EventManager\CheckoutEventManager;
 use Shop42\Ixopay\Ixopay;
 use Shop42\Model\OrderInterface;
+use Shop42\TableGateway\OrderTableGatewayInterface;
 
 class CallbackCommand extends AbstractCommand
 {
@@ -89,7 +90,7 @@ class CallbackCommand extends AbstractCommand
 
         $this->result = $client->readCallback(file_get_contents('php://input'));
 
-        $orderResult = $this->getTableGateway(OrderInterface::class)->select([
+        $orderResult = $this->getTableGateway(OrderTableGatewayInterface::class)->select([
             'uuid' => $this->result->getTransactionId(),
         ]);
 
@@ -131,7 +132,7 @@ class CallbackCommand extends AbstractCommand
                 }
 
                 if ($this->order->hasChanged()) {
-                    $this->getTableGateway(OrderInterface::class)->update($this->order);
+                    $this->getTableGateway(OrderTableGatewayInterface::class)->update($this->order);
                 }
 
                 $this

@@ -7,8 +7,9 @@ use Core42\Model\GenericModel;
 use Core42\Test\PHPUnit\Bootstrap;
 use Shop42\Command\Cart\CartUpdateCommand;
 use Shop42\EventManager\CartEventManager;
-use Shop42\Model\CartInterface;
 use Shop42\Model\ProductInterface;
+use Shop42\TableGateway\CartTableGatewayInterface;
+use Shop42\TableGateway\ProductTableGatewayInterface;
 use Zend\ServiceManager\ServiceManager;
 
 class CartUpdateCommandTest extends \PHPUnit_Framework_TestCase
@@ -42,7 +43,7 @@ class CartUpdateCommandTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $productModel = $this->getMockBuilder(ProductInterface::class)
+        $productModel = $this->getMockBuilder(ProductTableGatewayInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -56,7 +57,10 @@ class CartUpdateCommandTest extends \PHPUnit_Framework_TestCase
 
                 return $productModel;
             }));
-        $this->serviceManager->get('TableGateway')->setService(ProductInterface::class, $productTableGatewayMock);
+        $this->serviceManager->get('TableGateway')->setService(
+            ProductTableGatewayInterface::class,
+            $productTableGatewayMock
+        );
 
         $cmd = new CartUpdateCommand($this->serviceManager);
 
@@ -110,13 +114,13 @@ class CartUpdateCommandTest extends \PHPUnit_Framework_TestCase
         $cartTableGatewayMock->method('select')
             ->willReturn($resultSet);
 
-        $this->serviceManager->get('TableGateway')->setService(CartInterface::class, $cartTableGatewayMock);
+        $this->serviceManager->get('TableGateway')->setService(CartTableGatewayInterface::class, $cartTableGatewayMock);
 
         $productTableGatewayMock = $this->getMockBuilder('\Core42\Db\TableGateway\AbstractTableGateway')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $productModel = $this->getMockBuilder(ProductInterface::class)
+        $productModel = $this->getMockBuilder(ProductTableGatewayInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -130,7 +134,10 @@ class CartUpdateCommandTest extends \PHPUnit_Framework_TestCase
 
                 return $productModel;
             }));
-        $this->serviceManager->get('TableGateway')->setService(ProductInterface::class, $productTableGatewayMock);
+        $this->serviceManager->get('TableGateway')->setService(
+            ProductTableGatewayInterface::class,
+            $productTableGatewayMock
+        );
 
         $cmd = new CartUpdateCommand($this->serviceManager);
 

@@ -4,6 +4,7 @@ namespace Shop42\Command\Stock;
 use Core42\Command\AbstractCommand;
 use Core42\Db\Transaction\TransactionManager;
 use Shop42\Model\ProductInterface;
+use Shop42\TableGateway\ProductTableGatewayInterface;
 
 class ChangeCommand extends AbstractCommand
 {
@@ -49,7 +50,7 @@ class ChangeCommand extends AbstractCommand
      */
     protected function preExecute()
     {
-        $this->product = $this->getTableGateway(ProductInterface::class)->selectByPrimary($this->productId);
+        $this->product = $this->getTableGateway(ProductTableGatewayInterface::class)->selectByPrimary($this->productId);
         if (empty($this->product)) {
             $this->addError("productId", "invalid productId");
 
@@ -70,12 +71,12 @@ class ChangeCommand extends AbstractCommand
         try {
             $this->getServiceManager()->get(TransactionManager::class)->transaction(function(){
                 $count = $this
-                    ->getTableGateway(ProductInterface::class)
+                    ->getTableGateway(ProductTableGatewayInterface::class)
                     ->getAdapter()
                     ->query(
                         sprintf(
                             "UPDATE %s SET stock = stock + ? WHERE id = ? AND CAST(stock AS SIGNED) + ? >= 0",
-                            $this->getTableGateway(ProductInterface::class)->getTable()
+                            $this->getTableGateway(ProductTableGatewayInterface::class)->getTable()
                         ),
                         [
                             $this->stock,
