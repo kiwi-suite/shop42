@@ -8,6 +8,7 @@ use Ixopay\Client\Client;
 use Shop42\EventManager\CheckoutEventManager;
 use Shop42\Ixopay\Ixopay;
 use Shop42\Model\OrderInterface;
+use Shop42\NumberGenerator\NextOrderInterface;
 use Shop42\TableGateway\OrderTableGatewayInterface;
 
 class CallbackCommand extends AbstractCommand
@@ -152,13 +153,23 @@ class CallbackCommand extends AbstractCommand
         }
     }
 
+    /**
+     *
+     */
     protected function handleError()
     {
         if ($this->order->getPaymentStatus() === OrderInterface::STATUS_ERROR) {
             return;
         }
 
+        $orderNumber = $this
+            ->getServiceManager()
+            ->get(NextOrderInterface::class)
+            ->setOrder($this->order)
+            ->getNextOrderNumber();
+
         $this->order->setPaymentStatus(OrderInterface::PAYMENT_STATUS_ERROR)
+            ->setOrderNumber($orderNumber)
             ->setStatus(OrderInterface::STATUS_ERROR);
 
         $this
@@ -167,14 +178,24 @@ class CallbackCommand extends AbstractCommand
             ->trigger(CheckoutEventManager::EVENT_CALLBACK_FAIL, $this->order);
     }
 
+    /**
+     *
+     */
     protected function handleSuccess()
     {
         if ($this->order->getPaymentStatus() === OrderInterface::PAYMENT_STATUS_SUCCESS) {
             return;
         }
 
+        $orderNumber = $this
+            ->getServiceManager()
+            ->get(NextOrderInterface::class)
+            ->setOrder($this->order)
+            ->getNextOrderNumber();
+
         $this->order->setPayed(new \DateTime())
             ->setPaymentStatus(OrderInterface::PAYMENT_STATUS_SUCCESS)
+            ->setOrderNumber($orderNumber)
             ->setStatus(OrderInterface::STATUS_OPEN);
 
         $this
@@ -183,6 +204,9 @@ class CallbackCommand extends AbstractCommand
             ->trigger(CheckoutEventManager::EVENT_CALLBACK_SUCCESS, $this->order);
     }
 
+    /**
+     *
+     */
     protected function handlePending()
     {
         if ($this->order->getPaymentStatus() === OrderInterface::PAYMENT_STATUS_PENDING) {
