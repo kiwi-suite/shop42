@@ -12,7 +12,23 @@ class Bill implements BillableInterface, \Iterator, \Countable, \JsonSerializabl
     /**
      * @var string
      */
+    protected $handle = "";
+
+    /**
+     * @var string
+     */
     protected $currency;
+
+    /**
+     * Bill constructor.
+     * @param string $handle
+     */
+    public function __construct($handle = "")
+    {
+        if (!empty($handle)) {
+            $this->setHandle($handle);
+        }
+    }
 
     /**
      * @param BillableInterface $item
@@ -319,5 +335,35 @@ class Bill implements BillableInterface, \Iterator, \Countable, \JsonSerializabl
     function jsonSerialize()
     {
         return $this->toArray();
+    }
+
+    /**
+     * @param $handle
+     * @return $this
+     */
+    public function setHandle($handle)
+    {
+        $this->handle = $handle;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHandle()
+    {
+        return $this->handle;
+    }
+
+    /**
+     * @param $handle
+     * @return BillableInterface|null
+     */
+    public function getItemByHandle($handle)
+    {
+        foreach ($this->getItems() as $item) {
+            if ($item->getHandle() == $handle) return $item;
+        }
     }
 }

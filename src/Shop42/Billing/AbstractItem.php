@@ -203,6 +203,13 @@ abstract class AbstractItem implements ItemInterface {
         return $this->currency;
     }
 
+    /**
+     * @return string
+     */
+    public function getHandle()
+    {
+        return uniqid();
+    }
 
     /**
      * @return array

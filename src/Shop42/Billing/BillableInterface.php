@@ -5,6 +5,11 @@ namespace Shop42\Billing;
 interface BillableInterface {
 
     /**
+     * @return string
+     */
+    public function getHandle();
+
+    /**
      * @return int
      */
     public function getTotalQuantity();
