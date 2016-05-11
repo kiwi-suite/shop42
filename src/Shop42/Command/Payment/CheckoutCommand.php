@@ -142,6 +142,12 @@ class CheckoutCommand extends AbstractCommand
             return ;
         }
 
+        if ($this->bill->getItemByHandle("items") == null) {
+            $this->addError("bill", "no bill with item 'items'");
+
+            return;
+        }
+
         if (empty($this->order->getUuid())) {
             $this->order->setUuid(Uuid::uuid4());
         }
@@ -168,7 +174,7 @@ class CheckoutCommand extends AbstractCommand
                     ->trigger(CheckoutEventManager::EVENT_CHECKOUT_PRE, $this->order);
 
                 /** @var ItemInterface $item */
-                foreach ($this->bill as $item) {
+                foreach ($this->bill->getItemByHandle("items") as $item) {
                     /** @var ChangeCommand $cmd */
                     $cmd = $this->getCommand(ChangeCommand::class);
                     $cmd->setStock((-1) * $item->getTotalQuantity())
