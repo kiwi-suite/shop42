@@ -49,7 +49,7 @@ class CheckoutEventListener extends AbstractListenerAggregate
         $order = $event->getTarget();
 
         /** @var ItemInterface $item */
-        foreach ($order->getBill() as $item) {
+        foreach ($order->getBill()->getItemByHandle("items") as $item) {
             $changeCommand = clone $this->changeCommand;
             $changeCommand->setProductId($item->getProductId())
                 ->setStock($item->getTotalQuantity())
