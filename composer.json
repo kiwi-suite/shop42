@@ -1,21 +1,10 @@
 {
   "name": "fruit42/shop42",
   "type": "zend-module",
-
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "git@gitlab.raum42.at:fruit42/core42.git"
-    }
-  ],
-
   "require": {
     "php": ">=5.5",
-    "ext-intl" : "*",
-    "composer/installers": "~1.0",
-    "zendframework/zendframework": "^2.5",
     "ramsey/uuid": "2.8.3",
-    "fruit42/core42": "^2.0",
+    "fruit42/core42": ">=2.0",
     "ixolit/ixopay-php-client": "^1.0"
   },
   "autoload": {
