@@ -124,6 +124,10 @@ class CheckoutCommand extends AbstractCommand
         return $this;
     }
 
+    /**
+     * @param string $errorUrl
+     * @return $this
+     */
     public function setErrorUrl($errorUrl)
     {
         $this->errorUrl = $errorUrl;

@@ -2,8 +2,8 @@
 
 namespace Shop42\Billing;
 
-abstract class AbstractItem implements ItemInterface {
-
+abstract class AbstractItem implements ItemInterface
+{
     use TaxTrait;
 
     /**
@@ -234,5 +234,4 @@ abstract class AbstractItem implements ItemInterface {
             'singleTaxPrice' => $this->getSingleTaxPrice(),
         ];
     }
-
 }
