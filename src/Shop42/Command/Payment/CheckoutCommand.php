@@ -166,7 +166,7 @@ class CheckoutCommand extends AbstractCommand
     protected function execute()
     {
         try {
-            $this->getServiceManager()->get(TransactionManager::class)->transaction(function(){
+            $this->getServiceManager()->get(TransactionManager::class)->transaction(function () {
 
                 $this
                     ->getServiceManager()
@@ -258,7 +258,7 @@ class CheckoutCommand extends AbstractCommand
         $customer->setFirstName($this->order->getBillingFirstName());
         $customer->setLastName($this->order->getBillingLastName());
         $customer->setCompany($this->order->getBillingCompany());
-        if ($this->order->getBillingBirthDate() instanceof \DateTime){
+        if ($this->order->getBillingBirthDate() instanceof \DateTime) {
             $customer->setBirthDate($this->order->getBillingBirthDate());
         }
         if ($this->order->getBillingGender() === OrderInterface::GENDER_MALE) {

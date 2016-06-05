@@ -51,7 +51,7 @@ class NextInvoice implements NextInvoiceInterface
      */
     public function getNextInvoiceNumber()
     {
-        $result = $this->orderTableGateway->select(function(Select $select) {
+        $result = $this->orderTableGateway->select(function (Select $select) {
             $select->columns([
                 'invoiceNumber' => new Expression("COUNT(*) + 1")
             ]);

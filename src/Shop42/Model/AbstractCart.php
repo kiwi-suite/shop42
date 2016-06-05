@@ -111,5 +111,4 @@ abstract class AbstractCart extends AbstractModel implements CartInterface
     {
         return $this->get("quantity");
     }
-
 }

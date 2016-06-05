@@ -69,7 +69,7 @@ class ChangeCommand extends AbstractCommand
         }
 
         try {
-            $this->getServiceManager()->get(TransactionManager::class)->transaction(function(){
+            $this->getServiceManager()->get(TransactionManager::class)->transaction(function () {
                 $count = $this
                     ->getTableGateway(ProductTableGatewayInterface::class)
                     ->getAdapter()

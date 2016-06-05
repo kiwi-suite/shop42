@@ -98,13 +98,17 @@ class ProductListSelector extends AbstractDatabaseSelector
 
         /** @var ProductInterface $product */
         foreach ($productResult as $product) {
-            if (!isset($items[$product->getId()])) continue;
+            if (!isset($items[$product->getId()])) {
+                continue;
+            }
             $items[$product->getId()]['product'] = $product;
         }
 
         /** @var ProductI18nInterface $productI18n */
         foreach ($productI18nResult as $productI18n) {
-            if (!isset($items[$productI18n->getProductId()])) continue;
+            if (!isset($items[$productI18n->getProductId()])) {
+                continue;
+            }
 
             $items[$productI18n->getProductId()]['productI18n'] = $productI18n;
         }

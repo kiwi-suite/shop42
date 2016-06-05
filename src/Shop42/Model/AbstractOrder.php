@@ -716,6 +716,4 @@ abstract class AbstractOrder extends AbstractModel implements OrderInterface
     {
         return $this->get('created');
     }
-
-
 }

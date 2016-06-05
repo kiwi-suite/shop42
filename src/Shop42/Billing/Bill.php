@@ -150,7 +150,7 @@ class Bill implements BillableInterface, \Iterator, \Countable, \JsonSerializabl
 
         $currency = [];
 
-        $this->deepItemWalk($this->getItems(), function(ItemInterface $item) use (&$currency) {
+        $this->deepItemWalk($this->getItems(), function (ItemInterface $item) use (&$currency) {
             $currency[$item->getCurrency()] = true;
         });
 
@@ -200,7 +200,7 @@ class Bill implements BillableInterface, \Iterator, \Countable, \JsonSerializabl
      */
     protected function sumPriceBeforeTax($items)
     {
-        return array_sum(array_map(function(BillableInterface $item){
+        return array_sum(array_map(function (BillableInterface $item) {
             return $item->getTotalPriceBeforeTax();
         }, $items));
     }
@@ -210,7 +210,7 @@ class Bill implements BillableInterface, \Iterator, \Countable, \JsonSerializabl
      */
     protected function sumPriceAfterTax($items)
     {
-        return array_sum(array_map(function(BillableInterface $item){
+        return array_sum(array_map(function (BillableInterface $item) {
             return $item->getTotalPriceAfterTax();
         }, $items));
     }
@@ -220,7 +220,7 @@ class Bill implements BillableInterface, \Iterator, \Countable, \JsonSerializabl
      */
     protected function sumTaxPrice($items)
     {
-        return array_sum(array_map(function(BillableInterface $item){
+        return array_sum(array_map(function (BillableInterface $item) {
             return $item->getTotalTaxPrice();
         }, $items));
     }
@@ -233,8 +233,8 @@ class Bill implements BillableInterface, \Iterator, \Countable, \JsonSerializabl
     {
         $taxes = [];
 
-        $this->deepItemWalk($items, function(ItemInterface $item) use (&$taxes){
-            if ( ! array_key_exists($item->getTax(), $taxes)) {
+        $this->deepItemWalk($items, function (ItemInterface $item) use (&$taxes) {
+            if (! array_key_exists($item->getTax(), $taxes)) {
                 $taxes[$item->getTax()] = $item->getTotalTaxPrice();
             } else {
                 $taxes[$item->getTax()] += $item->getTotalTaxPrice();
@@ -251,7 +251,7 @@ class Bill implements BillableInterface, \Iterator, \Countable, \JsonSerializabl
      */
     protected function sumQuantity($items)
     {
-        return array_sum(array_map(function(BillableInterface $item){
+        return array_sum(array_map(function (BillableInterface $item) {
             return $item->getTotalQuantity();
         }, $items));
     }
@@ -332,7 +332,7 @@ class Bill implements BillableInterface, \Iterator, \Countable, \JsonSerializabl
      * which is a value of any type other than a resource.
      * @since 5.4.0
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return $this->toArray();
     }
@@ -363,7 +363,9 @@ class Bill implements BillableInterface, \Iterator, \Countable, \JsonSerializabl
     public function getItemByHandle($handle)
     {
         foreach ($this->getItems() as $item) {
-            if ($item->getHandle() == $handle) return $item;
+            if ($item->getHandle() == $handle) {
+                return $item;
+            }
         }
     }
 }

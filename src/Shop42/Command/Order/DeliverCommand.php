@@ -65,7 +65,7 @@ class DeliverCommand extends AbstractCommand
     protected function execute()
     {
         try {
-            $this->getServiceManager()->get(TransactionManager::class)->transaction(function(){
+            $this->getServiceManager()->get(TransactionManager::class)->transaction(function () {
 
                 $invoiceNumber = $this
                     ->getServiceManager()

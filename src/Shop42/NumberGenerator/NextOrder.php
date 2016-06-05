@@ -51,7 +51,7 @@ class NextOrder implements NextOrderInterface
      */
     public function getNextOrderNumber()
     {
-        $result = $this->orderTableGateway->select(function(Select $select) {
+        $result = $this->orderTableGateway->select(function (Select $select) {
             $select->columns([
                 'orderNumber' => new Expression("COUNT(*) + 1")
             ]);

@@ -51,7 +51,7 @@ class NextDelivery implements NextDeliveryInterface
      */
     public function getNextDeliveryNumber()
     {
-        $result = $this->orderTableGateway->select(function(Select $select) {
+        $result = $this->orderTableGateway->select(function (Select $select) {
             $select->columns([
                 'deliveryNumber' => new Expression("COUNT(*) + 1")
             ]);

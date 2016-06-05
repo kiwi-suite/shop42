@@ -2,7 +2,8 @@
 
 namespace Shop42\Billing;
 
-interface ItemInterface extends BillableInterface {
+interface ItemInterface extends BillableInterface
+{
 
     /**
      * @param mixed $productId

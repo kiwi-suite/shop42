@@ -2,8 +2,8 @@
 
 namespace Shop42\Billing;
 
-trait TaxTrait {
-
+trait TaxTrait
+{
     /**
      * @return float
      */
@@ -89,5 +89,4 @@ trait TaxTrait {
     {
         return $this->getSingleTaxPrice() * $this->getTotalQuantity();
     }
-
 }

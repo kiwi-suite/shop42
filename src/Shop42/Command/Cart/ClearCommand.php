@@ -46,7 +46,7 @@ class ClearCommand extends AbstractCommand
     protected function execute()
     {
         try {
-            $this->getServiceManager()->get(TransactionManager::class)->transaction(function(){
+            $this->getServiceManager()->get(TransactionManager::class)->transaction(function () {
                 if (!empty($this->userId)) {
                     $this->clearByUserId($this->userId);
                 }
@@ -93,5 +93,4 @@ class ClearCommand extends AbstractCommand
                 [$sessionId]
             );
     }
-
 }

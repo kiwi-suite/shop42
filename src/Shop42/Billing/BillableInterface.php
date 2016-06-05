@@ -2,7 +2,8 @@
 
 namespace Shop42\Billing;
 
-interface BillableInterface {
+interface BillableInterface
+{
 
     /**
      * @return string
@@ -38,5 +39,4 @@ interface BillableInterface {
      * @return string
      */
     public function getCurrency();
-
 }
